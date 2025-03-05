@@ -1,0 +1,19 @@
+# values.yaml
+namespace: "filebrowser"
+
+ingress:
+  enabled: true
+  host: "example.com"
+
+storage:
+  size: "5Mi"
+
+filebrowser:
+  replicas: 2
+  image: "filebrowser/filebrowser"
+  tag: "latest"
+
+nginx:
+  replicas: 1
+  image: "nginx"
+  tag: "latest"

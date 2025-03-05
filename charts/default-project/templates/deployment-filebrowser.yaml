@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filebrowser
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.filebrowser.replicas }}
+  selector:
+    matchLabels:
+      app: filebrowser
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      containers:
+        - name: filebrowser
+          image: {{ .Values.filebrowser.image }}:{{ .Values.filebrowser.tag }}
+          volumeMounts:
+            - mountPath: /srv
+              name: storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: filebrowser-pvc
