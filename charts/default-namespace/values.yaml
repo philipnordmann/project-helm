@@ -1,2 +1,7 @@
 # values.yaml
 namespace: "my-project"
+
+quota:
+  cpu: "6"
+  memory: "3Gi"
+  pods: "5"
