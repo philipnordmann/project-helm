@@ -1,0 +1,138 @@
+# values.yaml for namespace-as-a-service chart
+
+# Namespace configuration
+namespace:
+  name: "my-project-1"
+  labels:
+    environment: development
+    team: project-team-1
+    cost-center: cc12345
+
+# User access management
+rbac:
+  # User/group access
+  userGroups:
+    - name: "my-project-1-team"
+      kind: Group
+    - name: "project-admin@example.com"
+      kind: User
+  
+  # Service accounts
+  serviceAccounts:
+    - name: project-pipeline
+      createRoleBinding: true
+  
+  # Additional permissions beyond defaults
+  additionalRules: []
+    # - apiGroups: [""]
+    #   resources: ["nodes"]
+    #   verbs: ["get", "list"]
+
+# Network policies
+networkPolicies:
+  enabled: true
+  defaultDeny: true
+  allowSameNamespace: true
+  
+  ingressRules:
+    - name: web-ingress
+      podSelector:
+        app: nginx
+      namespaceSelector:
+        name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 80
+  
+  egressRules:
+    - name: dns-egress
+      toNamespaces:
+        - name: kube-system
+          podLabels:
+            k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - name: database-egress
+      toNamespaces:
+        - name: database
+
+# Resource management
+resources:
+  limitRange:
+    enabled: true
+    container:
+      default:
+        cpu: 200m
+        memory: 256Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 128Mi
+      max:
+        cpu: "1"
+        memory: 1Gi
+      min:
+        cpu: 50m
+        memory: 64Mi
+  
+  resourceQuota:
+    enabled: true
+    hard:
+      # Compute resources
+      requests.cpu: "2"
+      requests.memory: 2Gi
+      limits.cpu: "4"
+      limits.memory: 4Gi
+      
+      # Pod count
+      pods: "10"
+      
+      # Storage resources
+      requests.storage: 20Gi
+      persistentvolumeclaims: "5"
+      
+      # Storage classes
+      storageClasses:
+        - name: ssd
+          requests.storage: 10Gi
+          persistentvolumeclaims: "3"
+      
+      # Object count limits
+      objectCounts:
+        configmaps: "20"
+        secrets: "20"
+        services: "5"
+        services.loadbalancers: "1"
+        services.nodeports: "2"
+        deployments.apps: "5"
+        statefulsets.apps: "3"
+        jobs.batch: "5"
+        cronjobs.batch: "3"
+
+# OPA Gatekeeper constraints (assumes Gatekeeper is installed cluster-wide)
+gatekeeper:
+  enabled: true
+  constraints:
+    requiredResources:
+      enabled: true
+      limits: ["cpu", "memory"]
+      requests: ["cpu", "memory"]
+    
+    allowedRegistries:
+      enabled: true
+      registries:
+        - "docker.io/company/"
+        - "gcr.io/company-project/"
+        - "registry.company.com/"
+
+# Default applications to deploy (optional)
+applications:
+  nginx:
+    enabled: false
+    replicas: 2
+  
+  filebrowser:
+    enabled: false
+    replicas: 1

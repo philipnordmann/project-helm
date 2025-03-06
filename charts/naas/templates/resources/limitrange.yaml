@@ -1,0 +1,24 @@
+{{- if and .Values.resources.limitRange.enabled }}
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "naas.labels" . | nindent 4 }}
+spec:
+  limits:
+  - type: Container
+    default:
+      cpu: {{ .Values.resources.limitRange.container.default.cpu }}
+      memory: {{ .Values.resources.limitRange.container.default.memory }}
+    defaultRequest:
+      cpu: {{ .Values.resources.limitRange.container.defaultRequest.cpu }}
+      memory: {{ .Values.resources.limitRange.container.defaultRequest.memory }}
+    max:
+      cpu: {{ .Values.resources.limitRange.container.max.cpu }}
+      memory: {{ .Values.resources.limitRange.container.max.memory }}
+    min:
+      cpu: {{ .Values.resources.limitRange.container.min.cpu }}
+      memory: {{ .Values.resources.limitRange.container.min.memory }}
+{{- end }}

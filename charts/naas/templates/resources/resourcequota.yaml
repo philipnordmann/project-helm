@@ -1,0 +1,42 @@
+{{- if and .Values.resources.resourceQuota.enabled }}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: advanced-quota
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "naas.labels" . | nindent 4 }}
+spec:
+  hard:
+    # Compute resources
+    requests.cpu: {{ .Values.resources.resourceQuota.hard.requests.cpu | quote }}
+    requests.memory: {{ .Values.resources.resourceQuota.hard.requests.memory | quote }}
+    limits.cpu: {{ .Values.resources.resourceQuota.hard.limits.cpu | quote }}
+    limits.memory: {{ .Values.resources.resourceQuota.hard.limits.memory | quote }}
+    
+    # Pod count
+    pods: {{ .Values.resources.resourceQuota.hard.pods | quote }}
+    
+    # Storage resources
+    requests.storage: {{ .Values.resources.resourceQuota.hard.requests.storage | quote }}
+    persistentvolumeclaims: {{ .Values.resources.resourceQuota.hard.persistentvolumeclaims | quote }}
+    
+    {{- if .Values.resources.resourceQuota.hard.storageClasses }}
+    # Storage classes
+    {{- range .Values.resources.resourceQuota.hard.storageClasses }}
+    {{ .name }}.storageclass.storage.k8s.io/requests.storage: {{ .requests.storage | quote }}
+    {{ .name }}.storageclass.storage.k8s.io/persistentvolumeclaims: {{ .persistentvolumeclaims | quote }}
+    {{- end }}
+    {{- end }}
+    
+    {{- if .Values.resources.resourceQuota.hard.objectCounts }}
+    # Object count limits
+    {{- range $key, $value := .Values.resources.resourceQuota.hard.objectCounts }}
+    {{- if contains "." $key }}
+    count/{{ $key }}: {{ $value | quote }}
+    {{- else }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}

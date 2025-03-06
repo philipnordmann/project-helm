@@ -1,0 +1,28 @@
+{{- if and .Values.networkPolicies.enabled .Values.networkPolicies.ingressRules }}
+{{- range .Values.networkPolicies.ingressRules }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace.name }}
+  labels:
+    {{- include "naas.labels" $ | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- toYaml .podSelector | nindent 6 }}
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          {{- toYaml .namespaceSelector | nindent 10 }}
+    ports:
+    {{- range .ports }}
+    - protocol: {{ .protocol }}
+      port: {{ .port }}
+    {{- end }}
+  policyTypes:
+  - Ingress
+---
+{{- end }}
+{{- end }}

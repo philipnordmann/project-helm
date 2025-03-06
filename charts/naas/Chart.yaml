@@ -1,0 +1,9 @@
+apiVersion: v2
+name: naas
+description: A Helm chart for provisioning namespaces with RBAC, network policies, resource quotas, and policies
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Platform Team
+    email: platform@example.com
