@@ -81,10 +81,12 @@ resources:
     enabled: true
     hard:
       # Compute resources
-      requests.cpu: "2"
-      requests.memory: 2Gi
-      limits.cpu: "4"
-      limits.memory: 4Gi
+      requests:
+        cpu: "2"
+        memory: 2Gi
+      limits:
+        cpu: "4"
+        memory: 4Gi
       
       # Pod count
       pods: "10"
@@ -96,7 +98,8 @@ resources:
       # Storage classes
       storageClasses:
         - name: ssd
-          requests.storage: 10Gi
+          requests:
+            storage: 10Gi
           persistentvolumeclaims: "3"
       
       # Object count limits
